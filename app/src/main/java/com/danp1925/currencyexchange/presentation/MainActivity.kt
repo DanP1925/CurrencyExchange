@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.danp1925.currencyexchange.presentation.main.MainScreen
+import com.danp1925.currencyexchange.presentation.main.MainViewModel
 import com.danp1925.currencyexchange.ui.theme.CurrencyExchangeTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +14,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CurrencyExchangeTheme {
-                MainScreen()
+                MainScreen(MainViewModel())
             }
         }
     }

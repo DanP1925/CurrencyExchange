@@ -25,11 +25,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.danp1925.currencyexchange.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    mainViewModel: MainViewModel
+) {
     val convertedCurrencies = listOf("345.95", "86.61", "16029.90")
 
+    MainScreenContent(convertedCurrencies)
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun MainScreenContent(convertedCurrencies: List<String>) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,5 +84,8 @@ fun MainScreen() {
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen()
+    val convertedCurrencies = listOf("345.95", "86.61", "16029.90")
+    MainScreenContent(
+        convertedCurrencies = convertedCurrencies
+    )
 }
