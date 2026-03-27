@@ -30,7 +30,7 @@ class MainScreenTest {
 
         expectedCurrencies.forEachIndexed { index, expected ->
             composeTestRule
-                .onNode(hasTestTag(MainTestTag.CURRENCY_LIST))
+                .onNode(hasTestTag(MainTestTag.EXCHANGE_RATES))
                 .onChildren()[index]
                 .assertTextEquals(expected)
         }
