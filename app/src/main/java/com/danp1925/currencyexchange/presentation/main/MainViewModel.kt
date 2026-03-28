@@ -21,10 +21,19 @@ class MainViewModel
             )
         val uiState = _uiState.asStateFlow()
 
-        fun onValueChanged(newValue: String) {
+        fun onValueChanged(inputValue: String) {
+            if (!INPUT_REGEX.matches(inputValue)) return
+
+            if (inputValue.endsWith(".")) {
+                _uiState.update { it.copy(displayValue = inputValue) }
+                return
+            }
+
+            val newValue = BigDecimal(inputValue.ifEmpty { "0" })
             _uiState.update {
                 it.copy(
-                    baseValue = uiState.value.baseValue.copy(value = BigDecimal(newValue)),
+                    baseValue = uiState.value.baseValue.copy(value = newValue),
+                    displayValue = newValue.toPlainString(),
                     convertedValues = getDummyData(),
                 )
             }
@@ -40,5 +49,6 @@ class MainViewModel
 
             const val DEFAULT_BASE_VALUE = 0
             const val DEFAULT_BASE_CURRENCY = "USD"
+            val INPUT_REGEX = Regex("^\\d*(\\.\\d{0,2})?$")
         }
     }
