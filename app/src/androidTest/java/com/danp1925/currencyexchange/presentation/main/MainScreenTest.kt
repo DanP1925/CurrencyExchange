@@ -10,7 +10,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class MainScreenTest {
-
     private val mainViewModel = MainViewModel()
 
     @get:Rule
