@@ -26,14 +26,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.danp1925.currencyexchange.R
+import com.danp1925.currencyexchange.presentation.main.models.UIConvertedValue
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Composable
 fun MainScreen(mainViewModel: MainViewModel = viewModel()) {
     val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
 
     MainScreenContent(
-        baseValue = uiState.baseValue,
-        convertedCurrencies = uiState.currencyConverted,
+        baseValue = uiState.baseValue.value,
+        convertedCurrencies = uiState.convertedValues,
         onValueChanged = mainViewModel::onValueChanged,
     )
 }
@@ -41,8 +44,8 @@ fun MainScreen(mainViewModel: MainViewModel = viewModel()) {
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun MainScreenContent(
-    baseValue: String,
-    convertedCurrencies: List<String>,
+    baseValue: BigDecimal,
+    convertedCurrencies: List<UIConvertedValue>,
     onValueChanged: (String) -> Unit,
 ) {
     Scaffold(
@@ -66,7 +69,7 @@ private fun MainScreenContent(
                     .padding(paddingValues = innerPadding),
         ) {
             TextField(
-                value = baseValue,
+                value = baseValue.toString(),
                 onValueChange = onValueChanged,
                 label = { Text("Insert your amount") },
                 modifier = Modifier.testTag(tag = MainTestTag.CURRENCY_INPUT),
@@ -79,7 +82,7 @@ private fun MainScreenContent(
                 items(convertedCurrencies) { convertedCurrency ->
                     Column {
                         Text(
-                            text = convertedCurrency,
+                            text = convertedCurrency.value.setScale(2, RoundingMode.HALF_EVEN).toString(),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.width(120.dp),
                         )
@@ -93,9 +96,15 @@ private fun MainScreenContent(
 @Preview
 @Composable
 fun MainScreenPreview() {
+    val convertedCurrencies =
+        listOf(
+            UIConvertedValue(BigDecimal(345.95), "PEN"),
+            UIConvertedValue(BigDecimal(86.61), "EUR"),
+            UIConvertedValue(BigDecimal(16029.90), "JPY"),
+        )
     MainScreenContent(
-        baseValue = "100",
-        convertedCurrencies = listOf("345.95", "86.61", "16029.90"),
+        baseValue = BigDecimal(100.0),
+        convertedCurrencies = convertedCurrencies,
         onValueChanged = {},
     )
 }
