@@ -23,11 +23,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.danp1925.currencyexchange.R
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel = viewModel()
 ) {
     val convertedCurrencies = listOf("345.95", "86.61", "16029.90")
 
