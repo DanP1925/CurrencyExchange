@@ -22,6 +22,7 @@ class MainScreenRobot(
         composeTestRule
             .onNode(hasTestTag(MainTestTag.EXCHANGE_RATES))
             .onChildren()[index]
+            .onChildren()[0]
             .assertTextEquals(converted)
     }
 }
