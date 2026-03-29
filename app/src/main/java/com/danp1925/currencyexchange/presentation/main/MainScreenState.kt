@@ -6,6 +6,7 @@ data class MainScreenState(
     val baseValue: UIConvertedValue,
     val displayValue: String = baseValue.value.toString(),
     val convertedValues: List<UIConvertedValue> = emptyList(),
+    val isMenuOpen: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
 )

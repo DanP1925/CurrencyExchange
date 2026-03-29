@@ -1,7 +1,6 @@
 package com.danp1925.currencyexchange.presentation.main
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,9 +10,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -43,8 +45,10 @@ fun MainScreen(mainViewModel: MainViewModel = viewModel()) {
     MainScreenContent(
         baseValue = uiState.displayValue,
         baseCurrency = uiState.baseValue.currency,
+        expanded = uiState.isMenuOpen,
         convertedCurrencies = uiState.convertedValues,
         onValueChanged = mainViewModel::onValueChanged,
+        onExpandedChange = mainViewModel::onToggleMenu,
     )
 }
 
@@ -53,8 +57,10 @@ fun MainScreen(mainViewModel: MainViewModel = viewModel()) {
 private fun MainScreenContent(
     baseValue: String,
     baseCurrency: String,
+    expanded: Boolean,
     convertedCurrencies: List<UIConvertedValue>,
     onValueChanged: (String) -> Unit,
+    onExpandedChange: (Boolean) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -91,10 +97,32 @@ private fun MainScreenContent(
                         .padding(16.dp)
                         .testTag(tag = MainTestTag.CURRENCY_INPUT),
             )
-            Box {
-                Button(onClick = {}) {
-                    Text(baseCurrency)
-                }
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = onExpandedChange,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = 16.dp),
+            ) {
+                OutlinedTextField(
+                    value = baseCurrency,
+                    onValueChange = { },
+                    modifier =
+                        Modifier
+                            .width(100.dp)
+                            .menuAnchor(
+                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                            ),
+                    readOnly = true,
+                    label = { },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = expanded,
+                        )
+                    },
+                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                )
             }
             LazyVerticalGrid(
                 columns = GridCells.FixedSize(size = 120.dp),
@@ -140,6 +168,8 @@ fun MainScreenPreview() {
         baseValue = "100.0",
         baseCurrency = "USD",
         convertedCurrencies = convertedCurrencies,
+        expanded = false,
         onValueChanged = {},
+        onExpandedChange = {},
     )
 }
