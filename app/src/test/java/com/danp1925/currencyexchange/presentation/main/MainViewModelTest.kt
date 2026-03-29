@@ -1,7 +1,7 @@
 package com.danp1925.currencyexchange.presentation.main
 
-import junit.framework.TestCase.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class MainViewModelTest {
     private val sut by lazy {
