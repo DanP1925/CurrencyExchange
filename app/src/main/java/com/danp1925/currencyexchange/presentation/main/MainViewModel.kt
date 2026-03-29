@@ -26,6 +26,10 @@ class MainViewModel @Inject constructor(
         )
     val uiState = _uiState.asStateFlow()
 
+    init {
+        onValueChanged(DEFAULT_BASE_VALUE.toString())
+    }
+
     fun onValueChanged(inputValue: String) {
         if (!INPUT_REGEX.matches(inputValue)) return
 
