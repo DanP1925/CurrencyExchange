@@ -1,6 +1,8 @@
 package com.danp1925.currencyexchange.data
 
 import com.danp1925.currencyexchange.data.di.IoDispatcher
+import com.danp1925.currencyexchange.data.local.ConversionRateDao
+import com.danp1925.currencyexchange.data.local.LocalConversionRate
 import com.danp1925.currencyexchange.domain.IConversionRateRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -8,6 +10,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 class ConversionRateRepository @Inject constructor(
+    private val conversionRateDao: ConversionRateDao,
     @param:IoDispatcher private val dispatcher: CoroutineDispatcher,
 ) : IConversionRateRepository {
     private val conversionRates =
@@ -29,6 +32,23 @@ class ConversionRateRepository @Inject constructor(
 
     override suspend fun getConversionRates(): Map<String, BigDecimal> =
         withContext(dispatcher) {
-            conversionRates
+            val currentTimeStamp = System.currentTimeMillis()
+            val conversionRateWithMetadata = try {
+                conversionRateDao.getConversionRatesWithMetaData()
+            } catch (exception: Exception) {
+                conversionRateDao.updateList(
+                    currentTimeStamp,
+                    newItems = conversionRates.map { (currency, value) ->
+                        LocalConversionRate(
+                            value = value.toFloat(),
+                            currency = currency
+                        )
+                    }
+                )
+                conversionRateDao.getConversionRatesWithMetaData()
+            }
+            return@withContext conversionRateWithMetadata.localConversionRates.associate { conversionRate ->
+                conversionRate.currency to BigDecimal(conversionRate.value.toLong())
+            }
         }
 }
