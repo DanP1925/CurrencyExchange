@@ -1,10 +1,15 @@
 package com.danp1925.currencyexchange.data
 
+import com.danp1925.currencyexchange.data.di.IoDispatcher
 import com.danp1925.currencyexchange.domain.IConversionRateRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class ConversionRateRepository @Inject constructor() : IConversionRateRepository {
+class ConversionRateRepository @Inject constructor(
+    @param:IoDispatcher private val dispatcher: CoroutineDispatcher,
+) : IConversionRateRepository {
     private val conversionRates =
         mapOf(
             "USD" to BigDecimal(100.00),
@@ -22,5 +27,8 @@ class ConversionRateRepository @Inject constructor() : IConversionRateRepository
             "CNY" to BigDecimal(743.25),
         )
 
-    override suspend fun getConversionRates(): Map<String, BigDecimal> = conversionRates
+    override suspend fun getConversionRates(): Map<String, BigDecimal> =
+        withContext(dispatcher) {
+            conversionRates
+        }
 }
