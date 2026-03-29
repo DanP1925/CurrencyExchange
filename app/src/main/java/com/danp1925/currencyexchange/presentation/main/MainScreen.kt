@@ -2,6 +2,7 @@ package com.danp1925.currencyexchange.presentation.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -100,10 +102,7 @@ private fun MainScreenContent(
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = onExpandedChange,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(end = 16.dp),
+                modifier = Modifier.padding(start = 16.dp),
             ) {
                 OutlinedTextField(
                     value = baseCurrency,
@@ -123,11 +122,29 @@ private fun MainScreenContent(
                     },
                     colors = ExposedDropdownMenuDefaults.textFieldColors(),
                 )
+                ExposedDropdownMenu(
+                    modifier = Modifier.width(100.dp),
+                    expanded = expanded,
+                    onDismissRequest = { onExpandedChange(true) },
+                ) {
+                    convertedCurrencies.forEach { convertedCurrency ->
+                        DropdownMenuItem(
+                            text = { Text(convertedCurrency.currency) },
+                            onClick = {
+                            },
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                        )
+                    }
+                }
             }
             LazyVerticalGrid(
                 columns = GridCells.FixedSize(size = 120.dp),
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.testTag(tag = MainTestTag.EXCHANGE_RATES),
+                modifier =
+                    Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxHeight()
+                        .testTag(tag = MainTestTag.EXCHANGE_RATES),
             ) {
                 items(convertedCurrencies) { convertedCurrency ->
                     Column {
@@ -146,28 +163,42 @@ private fun MainScreenContent(
     }
 }
 
+private fun dummyData() =
+    listOf(
+        UIConvertedValue(BigDecimal(345.95), "PEN"),
+        UIConvertedValue(BigDecimal(86.61), "EUR"),
+        UIConvertedValue(BigDecimal(16029.90), "JPY"),
+        UIConvertedValue(BigDecimal(82.35), "GBP"),
+        UIConvertedValue(BigDecimal(136.72), "CAD"),
+        UIConvertedValue(BigDecimal(153.48), "AUD"),
+        UIConvertedValue(BigDecimal(727.50), "MXN"),
+        UIConvertedValue(BigDecimal(536.20), "INR"),
+        UIConvertedValue(BigDecimal(92.15), "CHF"),
+        UIConvertedValue(BigDecimal(1330.50), "KRW"),
+        UIConvertedValue(BigDecimal(364.80), "BRL"),
+        UIConvertedValue(BigDecimal(743.25), "CNY"),
+    )
+
 @Preview
 @Composable
-fun MainScreenPreview() {
-    val convertedCurrencies =
-        listOf(
-            UIConvertedValue(BigDecimal(345.95), "PEN"),
-            UIConvertedValue(BigDecimal(86.61), "EUR"),
-            UIConvertedValue(BigDecimal(16029.90), "JPY"),
-            UIConvertedValue(BigDecimal(82.35), "GBP"),
-            UIConvertedValue(BigDecimal(136.72), "CAD"),
-            UIConvertedValue(BigDecimal(153.48), "AUD"),
-            UIConvertedValue(BigDecimal(727.50), "MXN"),
-            UIConvertedValue(BigDecimal(536.20), "INR"),
-            UIConvertedValue(BigDecimal(92.15), "CHF"),
-            UIConvertedValue(BigDecimal(1330.50), "KRW"),
-            UIConvertedValue(BigDecimal(364.80), "BRL"),
-            UIConvertedValue(BigDecimal(743.25), "CNY"),
-        )
+fun MainScreenDropdownPreview() {
     MainScreenContent(
         baseValue = "100.0",
         baseCurrency = "USD",
-        convertedCurrencies = convertedCurrencies,
+        convertedCurrencies = dummyData(),
+        expanded = true,
+        onValueChanged = {},
+        onExpandedChange = {},
+    )
+}
+
+@Preview
+@Composable
+fun MainScreenPreview() {
+    MainScreenContent(
+        baseValue = "100.0",
+        baseCurrency = "USD",
+        convertedCurrencies = dummyData(),
         expanded = false,
         onValueChanged = {},
         onExpandedChange = {},

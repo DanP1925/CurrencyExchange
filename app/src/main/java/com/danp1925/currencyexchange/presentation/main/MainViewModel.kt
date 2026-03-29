@@ -40,7 +40,7 @@ class MainViewModel
         }
 
         fun onToggleMenu(current: Boolean) {
-            _uiState.update { it.copy(isMenuOpen = !current) }
+            _uiState.update { it.copy(isMenuOpen = current) }
         }
 
         companion object {
