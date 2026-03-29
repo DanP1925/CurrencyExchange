@@ -65,18 +65,7 @@ private fun MainScreenContent(
     onExpandedChange: (Boolean) -> Unit,
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                colors =
-                    topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
-                title = {
-                    Text(stringResource(R.string.main_title))
-                },
-            )
-        },
+        topBar = { MainTopAppBar() },
     ) { innerPadding ->
         Column(
             modifier =
@@ -84,80 +73,135 @@ private fun MainScreenContent(
                     .fillMaxSize()
                     .padding(paddingValues = innerPadding),
         ) {
-            TextField(
-                value = baseValue,
-                onValueChange = onValueChanged,
-                label = { Text("Insert your amount") },
-                keyboardOptions =
-                    KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Done,
-                    ),
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .testTag(tag = MainTestTag.CURRENCY_INPUT),
+            ValueInput(
+                baseValue,
+                onValueChanged,
+                modifier = Modifier.padding(all = 16.dp),
             )
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = onExpandedChange,
+            CurrencyDropdownMenu(
+                expanded,
+                onExpandedChange,
+                baseCurrency,
+                convertedCurrencies,
                 modifier = Modifier.padding(start = 16.dp),
-            ) {
-                OutlinedTextField(
-                    value = baseCurrency,
-                    onValueChange = { },
-                    modifier =
-                        Modifier
-                            .width(100.dp)
-                            .menuAnchor(
-                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                            ),
-                    readOnly = true,
-                    label = { },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = expanded,
-                        )
-                    },
-                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                )
-                ExposedDropdownMenu(
-                    modifier = Modifier.width(100.dp),
-                    expanded = expanded,
-                    onDismissRequest = { onExpandedChange(true) },
-                ) {
-                    convertedCurrencies.forEach { convertedCurrency ->
-                        DropdownMenuItem(
-                            text = { Text(convertedCurrency.currency) },
-                            onClick = {
-                            },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                        )
-                    }
-                }
-            }
-            LazyVerticalGrid(
-                columns = GridCells.FixedSize(size = 120.dp),
-                horizontalArrangement = Arrangement.Center,
+            )
+            ConvertedCurrencies(
+                convertedCurrencies,
                 modifier =
                     Modifier
                         .padding(vertical = 16.dp)
-                        .fillMaxHeight()
-                        .testTag(tag = MainTestTag.EXCHANGE_RATES),
-            ) {
-                items(convertedCurrencies) { convertedCurrency ->
-                    Column {
-                        Text(
-                            text =
-                                convertedCurrency.value
-                                    .setScale(2, RoundingMode.HALF_EVEN)
-                                    .toString(),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.width(120.dp),
-                        )
-                    }
-                }
+                        .fillMaxHeight(),
+            )
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun MainTopAppBar() {
+    TopAppBar(
+        colors =
+            topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.primary,
+            ),
+        title = {
+            Text(stringResource(R.string.main_title))
+        },
+    )
+}
+
+@Composable
+private fun ValueInput(
+    baseValue: String,
+    onValueChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TextField(
+        value = baseValue,
+        onValueChange = onValueChanged,
+        label = { Text(stringResource(R.string.input_label)) },
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = KeyboardType.Decimal,
+                imeAction = ImeAction.Done,
+            ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .testTag(tag = MainTestTag.CURRENCY_INPUT),
+    )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun CurrencyDropdownMenu(
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    baseCurrency: String,
+    convertedCurrencies: List<UIConvertedValue>,
+    modifier: Modifier = Modifier,
+) {
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = onExpandedChange,
+        modifier = modifier,
+    ) {
+        OutlinedTextField(
+            value = baseCurrency,
+            onValueChange = { },
+            modifier =
+                Modifier
+                    .width(100.dp)
+                    .menuAnchor(
+                        type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                    ),
+            readOnly = true,
+            label = { },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded,
+                )
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+        )
+        ExposedDropdownMenu(
+            modifier = Modifier.width(100.dp),
+            expanded = expanded,
+            onDismissRequest = { onExpandedChange(true) },
+        ) {
+            convertedCurrencies.forEach { convertedCurrency ->
+                DropdownMenuItem(
+                    text = { Text(convertedCurrency.currency) },
+                    onClick = {
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ConvertedCurrencies(
+    convertedCurrencies: List<UIConvertedValue>,
+    modifier: Modifier = Modifier,
+) {
+    LazyVerticalGrid(
+        columns = GridCells.FixedSize(size = 120.dp),
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier.testTag(tag = MainTestTag.EXCHANGE_RATES),
+    ) {
+        items(convertedCurrencies) { convertedCurrency ->
+            Column {
+                Text(
+                    text =
+                        convertedCurrency.value
+                            .setScale(2, RoundingMode.HALF_EVEN)
+                            .toString(),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(120.dp),
+                )
             }
         }
     }
