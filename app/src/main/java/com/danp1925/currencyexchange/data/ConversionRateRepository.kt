@@ -33,7 +33,7 @@ class ConversionRateRepository @Inject constructor(
     override suspend fun getConversionRates(): Map<String, BigDecimal> =
         withContext(dispatcher) {
             val currentTimeStamp = System.currentTimeMillis()
-            val conversionRateWithMetadata = try {
+            var conversionRateWithMetadata = try {
                 conversionRateDao.getConversionRatesWithMetaData()
             } catch (exception: Exception) {
                 conversionRateDao.updateList(
@@ -47,8 +47,28 @@ class ConversionRateRepository @Inject constructor(
                 )
                 conversionRateDao.getConversionRatesWithMetaData()
             }
+
+            val lastDownloadedAt =
+                conversionRateWithMetadata.conversionRateMetaData.lastDownloadedAt
+            if (currentTimeStamp - lastDownloadedAt > TIME_BETWEEN_UPDATES_IN_MILLISECONDS) {
+                conversionRateDao.updateList(
+                    currentTimeStamp,
+                    newItems = conversionRates.map { (currency, value) ->
+                        LocalConversionRate(
+                            value = value.toFloat(),
+                            currency = currency
+                        )
+                    }
+                )
+                conversionRateWithMetadata = conversionRateDao.getConversionRatesWithMetaData()
+            }
+
             return@withContext conversionRateWithMetadata.localConversionRates.associate { conversionRate ->
                 conversionRate.currency to BigDecimal(conversionRate.value.toLong())
             }
         }
+
+    companion object {
+        const val TIME_BETWEEN_UPDATES_IN_MILLISECONDS = 300000
+    }
 }
