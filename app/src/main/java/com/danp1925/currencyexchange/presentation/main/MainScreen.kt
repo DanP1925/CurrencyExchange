@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -28,11 +29,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.danp1925.currencyexchange.R
@@ -126,6 +130,7 @@ private fun ValueInput(
                 keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Done,
             ),
+        textStyle = TextStyle(fontSize = 20.sp),
         modifier =
             modifier
                 .fillMaxWidth()
@@ -163,6 +168,7 @@ private fun CurrencyDropdownMenu(
                     expanded = expanded,
                 )
             },
+            textStyle = TextStyle(fontSize = 16.sp),
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
         )
         ExposedDropdownMenu(
@@ -193,14 +199,25 @@ private fun ConvertedCurrencies(
         modifier = modifier.testTag(tag = MainTestTag.EXCHANGE_RATES),
     ) {
         items(convertedCurrencies) { convertedCurrency ->
-            Column {
+            Card(
+                modifier = Modifier.width(120.dp).padding(all = 8.dp),
+            ) {
                 Text(
                     text =
                         convertedCurrency.value
                             .setScale(2, RoundingMode.HALF_EVEN)
                             .toString(),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.width(120.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 20.sp,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                )
+                Text(
+                    text = convertedCurrency.currency,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
