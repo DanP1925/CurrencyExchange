@@ -70,4 +70,14 @@ class MainViewModelTest {
             assertEquals(expectedValue, result.value.toString())
         }
     }
+
+    @Test
+    fun `GIVEN newValue WHEN onToggleMenu THEN isMenuOpen is true`() {
+        val expected = true
+
+        sut.onToggleMenu(expected)
+        val actual = sut.uiState.value.isMenuOpen
+
+        assertEquals(expected, actual)
+    }
 }
