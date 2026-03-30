@@ -9,6 +9,5 @@ import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 @JsonIgnoreUnknownKeys
 data class GetLatestResponse(
     val timestamp: Long,
-    val rates: Map<String, Float>
+    val rates: Map<String, Float>,
 )
-

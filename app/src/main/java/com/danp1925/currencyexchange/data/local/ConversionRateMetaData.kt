@@ -5,6 +5,6 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class ConversionRateMetaData(
-    @PrimaryKey val metaDataId : String = "current_list",
-    val lastDownloadedAt : Long
+    @PrimaryKey val metaDataId: String = "current_list",
+    val lastDownloadedAt: Long,
 )

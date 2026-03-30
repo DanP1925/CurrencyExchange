@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [LocalConversionRate::class, ConversionRateMetaData::class],
-    version = 2
+    version = 2,
 )
 abstract class ConversionRateDb : RoomDatabase() {
     abstract val conversionRateDao: ConversionRateDao

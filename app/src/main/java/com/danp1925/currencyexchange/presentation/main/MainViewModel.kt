@@ -54,6 +54,21 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onCurrencySelected(newCurrency: String) {
+        val value = uiState.value.baseValue.value
+
+        viewModelScope.launch {
+            val convertedValues = getConvertedValues(value, newCurrency).map(ConvertedValue::toUI)
+
+            _uiState.update {
+                it.copy(
+                    baseValue = uiState.value.baseValue.copy(currency = newCurrency),
+                    convertedValues = convertedValues,
+                )
+            }
+        }
+    }
+
     fun onToggleMenu(current: Boolean) {
         _uiState.update { it.copy(isMenuOpen = current) }
     }

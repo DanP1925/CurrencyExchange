@@ -22,38 +22,35 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ConversionRateModule {
+    @Singleton
+    @Provides
+    fun provideRoomDatabase(
+        @ApplicationContext appContext: Context,
+    ): ConversionRateDb =
+        Room
+            .databaseBuilder(
+                appContext,
+                ConversionRateDb::class.java,
+                "conversionrate_database",
+            ).build()
 
     @Singleton
     @Provides
-    fun provideRoomDatabase(@ApplicationContext appContext: Context): ConversionRateDb {
-        return Room.databaseBuilder(
-            appContext,
-            ConversionRateDb::class.java,
-            "conversionrate_database"
-        ).build()
-    }
+    fun provideRoomDao(database: ConversionRateDb): ConversionRateDao = database.conversionRateDao
 
     @Singleton
     @Provides
-    fun provideRoomDao(database: ConversionRateDb): ConversionRateDao {
-        return database.conversionRateDao
-    }
+    fun provideConversionRateService(retrofit: Retrofit): ConversionRateService = retrofit.create(ConversionRateService::class.java)
 
     @Singleton
     @Provides
-    fun provideConversionRateService(retrofit: Retrofit): ConversionRateService {
-        return retrofit.create(ConversionRateService::class.java)
-    }
-
-    @Singleton
-    @Provides
-    fun provideRetrofit(): Retrofit {
-       return Retrofit.Builder()
-           .baseUrl("https://openexchangerates.org")
-           .addConverterFactory(
-               Json.asConverterFactory("application/json; charset=utf-8".toMediaType())
-           ).build()
-    }
+    fun provideRetrofit(): Retrofit =
+        Retrofit
+            .Builder()
+            .baseUrl("https://openexchangerates.org")
+            .addConverterFactory(
+                Json.asConverterFactory("application/json; charset=utf-8".toMediaType()),
+            ).build()
 }
 
 @Module

@@ -10,13 +10,13 @@ import androidx.room.PrimaryKey
             entity = ConversionRateMetaData::class,
             parentColumns = ["metaDataId"],
             childColumns = ["metaDataId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class LocalConversionRate(
     @PrimaryKey(autoGenerate = true) val id: Long? = null,
     val metaDataId: String = "current_list",
     val value: Float,
-    val currency: String
+    val currency: String,
 )

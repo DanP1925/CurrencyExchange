@@ -7,7 +7,7 @@ data class ConversionRateWithTimestamp(
     @Embedded val conversionRateMetaData: ConversionRateMetaData,
     @Relation(
         parentColumn = "metaDataId",
-        entityColumn = "metaDataId"
+        entityColumn = "metaDataId",
     )
-    val localConversionRates: List<LocalConversionRate>
+    val localConversionRates: List<LocalConversionRate>,
 )

@@ -16,18 +16,18 @@ class ConversionRateRepository @Inject constructor(
     private val conversionRateService: ConversionRateService,
     @param:IoDispatcher private val dispatcher: CoroutineDispatcher,
 ) : IConversionRateRepository {
-
     private val apiKey = BuildConfig.API_KEY
 
     override suspend fun getConversionRates(): Map<String, BigDecimal> =
         withContext(dispatcher) {
             val currentTimeStamp = System.currentTimeMillis()
-            var conversionRateWithMetadata = try {
-                conversionRateDao.getConversionRatesWithMetaData()
-            } catch (exception: Exception) {
-                fetchConversionRatesAndUpdate(currentTimeStamp)
-                conversionRateDao.getConversionRatesWithMetaData()
-            }
+            var conversionRateWithMetadata =
+                try {
+                    conversionRateDao.getConversionRatesWithMetaData()
+                } catch (exception: Exception) {
+                    fetchConversionRatesAndUpdate(currentTimeStamp)
+                    conversionRateDao.getConversionRatesWithMetaData()
+                }
 
             val lastDownloadedAt =
                 conversionRateWithMetadata.conversionRateMetaData.lastDownloadedAt
@@ -43,12 +43,13 @@ class ConversionRateRepository @Inject constructor(
 
     private suspend fun fetchConversionRatesAndUpdate(currentTimeStamp: Long) {
         val response = conversionRateService.getLatest(apiKey)
-        val newItems = response.rates.map { (currency, value) ->
-            LocalConversionRate(
-                value = value,
-                currency = currency
-            )
-        }
+        val newItems =
+            response.rates.map { (currency, value) ->
+                LocalConversionRate(
+                    value = value,
+                    currency = currency,
+                )
+            }
         conversionRateDao.updateList(currentTimeStamp, newItems = newItems)
     }
 

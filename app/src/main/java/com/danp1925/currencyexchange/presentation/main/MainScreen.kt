@@ -52,6 +52,7 @@ fun MainScreen(mainViewModel: MainViewModel = viewModel()) {
         baseValue = uiState.displayValue,
         baseCurrency = uiState.baseValue.currency,
         expanded = uiState.isMenuOpen,
+        onCurrencySelected = mainViewModel::onCurrencySelected,
         convertedCurrencies = uiState.convertedValues,
         onValueChanged = mainViewModel::onValueChanged,
         onExpandedChange = mainViewModel::onToggleMenu,
@@ -64,6 +65,7 @@ private fun MainScreenContent(
     baseValue: String,
     baseCurrency: String,
     expanded: Boolean,
+    onCurrencySelected: (String) -> Unit,
     convertedCurrencies: List<UIConvertedValue>,
     onValueChanged: (String) -> Unit,
     onExpandedChange: (Boolean) -> Unit,
@@ -85,6 +87,7 @@ private fun MainScreenContent(
             CurrencyDropdownMenu(
                 expanded,
                 onExpandedChange,
+                onCurrencySelected,
                 baseCurrency,
                 convertedCurrencies,
                 modifier = Modifier.padding(start = 16.dp),
@@ -143,6 +146,7 @@ private fun ValueInput(
 private fun CurrencyDropdownMenu(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
+    onCurrencySelected: (String) -> Unit,
     baseCurrency: String,
     convertedCurrencies: List<UIConvertedValue>,
     modifier: Modifier = Modifier,
@@ -180,6 +184,8 @@ private fun CurrencyDropdownMenu(
                 DropdownMenuItem(
                     text = { Text(convertedCurrency.currency) },
                     onClick = {
+                        onCurrencySelected(convertedCurrency.currency)
+                        onExpandedChange(false)
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                 )
@@ -248,6 +254,7 @@ fun MainScreenDropdownPreview() {
         baseCurrency = "USD",
         convertedCurrencies = dummyData(),
         expanded = true,
+        onCurrencySelected = {},
         onValueChanged = {},
         onExpandedChange = {},
     )
@@ -261,6 +268,7 @@ fun MainScreenPreview() {
         baseCurrency = "USD",
         convertedCurrencies = dummyData(),
         expanded = false,
+        onCurrencySelected = {},
         onValueChanged = {},
         onExpandedChange = {},
     )

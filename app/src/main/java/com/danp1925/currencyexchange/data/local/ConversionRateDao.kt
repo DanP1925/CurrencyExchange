@@ -8,15 +8,17 @@ import androidx.room.Transaction
 
 @Dao
 interface ConversionRateDao {
-
     @Transaction
     @Query("SELECT * FROM ConversionRateMetaData WHERE metaDataId = :id")
     suspend fun getConversionRatesWithMetaData(id: String = "current_list"): ConversionRateWithTimestamp
 
     @Transaction
-    suspend fun updateList(timestamp: Long, newItems: List<LocalConversionRate>) {
+    suspend fun updateList(
+        timestamp: Long,
+        newItems: List<LocalConversionRate>,
+    ) {
         insertConversionRateMetaData(
-            ConversionRateMetaData(metaDataId = "current_list", lastDownloadedAt = timestamp)
+            ConversionRateMetaData(metaDataId = "current_list", lastDownloadedAt = timestamp),
         )
 
         deleteConversionRates("current_list")
@@ -31,5 +33,4 @@ interface ConversionRateDao {
 
     @Insert
     suspend fun insertAllItems(conversionRates: List<LocalConversionRate>)
-
 }
